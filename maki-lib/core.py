@@ -1,7 +1,10 @@
-from typing import Type, Union
+from typing import Type, Union, Tuple
 import os
 import json
 import maki_errors
+import util 
+import sys
+import subprocess
 
 class Deck:
     path: str
@@ -28,6 +31,13 @@ class Deck:
 
         self.path = directory
 
+    def build(self):
+        py_files = util.get_files_in_path(self.path, ".py")
+        for py_file in py_files:
+            result = subprocess.run([sys.executable, py_file]) 
+
+        maki_files = util.get_files_in_path(self.path, ".maki")
+
 class Note:
     pass
 
@@ -35,8 +45,7 @@ class Model:
     path: str
     name: str
     id: int
-    parent: "Deck | None"
-    children: list["Deck"]
+    children: list["Model"]
 
     def load_from_directory(self, directory: str):
         if not os.path.isdir(directory) or not os.path.exists(directory):
@@ -61,4 +70,5 @@ class Model:
 
 
 class Project:
-    pass
+    decks: list[Deck]
+    models: list[Model]
